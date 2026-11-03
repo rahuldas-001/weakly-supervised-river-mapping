@@ -1,0 +1,14 @@
+numpy
+pandas
+scipy
+matplotlib
+openpyxl
+rasterio
+geopandas
+shapely
+scikit-learn
+torch
+segmentation-models-pytorch
+transformers
+earthengine-api
+geemap

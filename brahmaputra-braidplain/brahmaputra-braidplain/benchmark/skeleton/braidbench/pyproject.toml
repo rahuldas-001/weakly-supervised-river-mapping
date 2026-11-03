@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "braidbench"
+version = "0.1.0"
+description = "Multi-class multi-temporal braided river benchmark: data pipeline and baselines"
+requires-python = ">=3.10"
+dependencies = [
+    "earthengine-api>=0.1.400",
+    "geemap>=0.30",
+    "numpy>=1.24",
+    "rasterio>=1.3",
+    "pandas>=2.0",
+    "scipy>=1.11",
+    "tqdm>=4.66",
+    "matplotlib>=3.7",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+train = ["torch>=2.1", "torchvision>=0.16", "segmentation-models-pytorch>=0.3"]
+dev = ["nbstripout>=0.7", "pytest>=7.4", "ruff>=0.6"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100

@@ -1,0 +1,63 @@
+# Every parameter that affects the dataset lives here, not in a notebook cell.
+# Values below are transcribed from Dataset_Preparation.ipynb. VERIFY before use.
+
+project:
+  drive_folder: BRAHMA_MORPHO
+  ee_project: null          # set via BRAIDBENCH_EE_PROJECT env var, not committed
+
+sensors:
+  resolution_m: 10
+  crs: EPSG:32646           # UTM 46N
+  max_cloud_pct: 10
+  s1_pass: DESCENDING
+  s2_bands: [B2, B3, B4, B8, B8A, B11, B12]
+  s1_bands: [VV, VH]
+  join_window_days: 2       # S2 paired to nearest S1 within this window
+
+tiling:
+  # Annotation and training tile sizes are deliberately decoupled.
+  # Annotate at the larger size for spatial context; subdivide for training.
+  annotation_tile_px: 512
+  training_tile_px: 256
+  overlap_m: 0              # NOTE: was 256 in the original notebook. Overlap plus
+                            # random splitting causes spatial leakage. Keep 0 unless
+                            # splits are block-based.
+
+splits:
+  method: spatial_block     # NOT random. See docs/splits.md
+  block_size_tiles: 8
+  train_frac: 0.80
+  val_frac: 0.10
+  seed: 42
+  background_fraction: 0.35
+  holdout_river: null       # set to a river name for cross-basin generalisation test
+
+labels:
+  # Weak-label thresholds. These ARE the sparse-vegetation class boundary and
+  # must be reported verbatim in the paper.
+  ndvi_bare_max: 0.15       # bare bar requires NDVI below this
+  msavi2_veg_min: 0.05      # vegetated bar requires MSAVI2 above this
+  bsi_percentile: 60        # bare bar threshold taken at this percentile
+  water_method: otsu        # MNDWI + VV, Otsu threshold
+  ambiguous_rule: nearest_index_neighbour
+
+classes:
+  0: background
+  1: water
+  2: bare_bar               # renamed from active_bar: the classifier detects
+                            # absence of vegetation, not mobility
+  3: vegetated_bar
+
+masks:
+  # Released as separate layers, not as classes. See docs/class_definitions.md
+  anthropogenic: true       # embankments, spurs, bridge piers, sand mining
+  no_data: true             # shadow, thin cloud, haze
+  cultivated: true          # tile-level boolean for char surfaces
+
+assets:
+  braidplain: projects/rahulds001/assets/braidplain_mask_v1   # 28-yr Landsat envelope
+  corridor: projects/rahulds001/assets/AMRD_corridor_final
+  wmax: projects/rahulds001/assets/AMRD_WMax_1988_2025
+
+seasons:
+  window: [02-01, 03-31]    # lean season, month-day
